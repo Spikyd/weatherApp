@@ -1,0 +1,13 @@
+# Local database file
+db.sqlite3
+
+# Environment file containing sensitive data
+.env
+
+# Python compiled files
+*.pyc
+*.log
+__pycache__/
+
+# Virtual environment folder
+venv/
