@@ -26,7 +26,7 @@ cd weatherApp
 - On Windows:
   ```
   python -m venv venv
-  venv\Scripts\activate
+  source venv/Scripts/activate
   ```
 - On macOS and Linux:
   ```
