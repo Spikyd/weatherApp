@@ -1,6 +1,5 @@
 import requests
 import logging
-
 from django.shortcuts import render
 from .models import Forecast
 from datetime import datetime
@@ -9,7 +8,6 @@ from django.core.cache import cache
 from django.utils.text import slugify
 
 logger = logging.getLogger(__name__)
-
 
 def get_weather_data(city):
     safe_city = slugify(city)
@@ -25,24 +23,31 @@ def get_weather_data(city):
         params = {"key": api_key, "q": city, "days": 4}
 
         response = requests.get(base_url, params=params)
+
         if response.status_code == 400:
             error_msg = f"The city name '{city}' is not recognized. Please enter a valid city name."
             logger.error(error_msg)
-            raise Exception(error_msg)
+            raise ValueError(error_msg)
+
         response.raise_for_status()
         weather_data = response.json()
+
+        if not weather_data.get("location"):
+            error_msg = f"The city name '{city}' is not recognized. Please enter a valid city name."
+            logger.error(error_msg)
+            raise ValueError(error_msg)
+
         cache.set(cache_key, weather_data, timeout=3600)
         logger.debug("Weather data fetched and cached for city: %s", city)
         return weather_data
+
     except requests.RequestException as e:
         logger.exception("Error fetching data from WeatherAPI for city: %s", city)
         raise Exception("Error fetching data from WeatherAPI.")
 
 
 def update_or_create_forecast(city, forecast_data):
-    next_three_days_forecast = forecast_data["forecast"]["forecastday"][1:4] = (
-        forecast_data["forecast"]["forecastday"][1:4]
-    )
+    next_three_days_forecast = forecast_data["forecast"]["forecastday"][1:4]
     logger.debug(
         "Processing forecast for next three days: %s", next_three_days_forecast
     )
@@ -74,7 +79,6 @@ def update_or_create_forecast(city, forecast_data):
 
 
 def format_time(time_str):
-    """Converts 12-hour time format to 24-hour format."""
     return datetime.strptime(time_str, "%I:%M %p").strftime("%H:%M")
 
 
