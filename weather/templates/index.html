@@ -1,92 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Weather Forecast</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <style>
-        .fade-in {
-            animation: fadeIn ease 2s;
-            -webkit-animation: fadeIn ease 2s;
-            -moz-animation: fadeIn ease 2s;
-            -o-animation: fadeIn ease 2s;
-            -ms-animation: fadeIn ease 2s;
+      .fade-in {
+        animation: fadeIn ease 2s;
+        -webkit-animation: fadeIn ease 2s;
+        -moz-animation: fadeIn ease 2s;
+        -o-animation: fadeIn ease 2s;
+        -ms-animation: fadeIn ease 2s;
+      }
+      @keyframes fadeIn {
+        0% {
+          opacity: 0;
         }
-        @keyframes fadeIn {
-            0% {opacity:0;}
-            100% {opacity:1;}
+        100% {
+          opacity: 1;
         }
-        .weather-table th, .weather-table td {
-            text-align: center;
-            vertical-align: middle;
+      }
+      .weather-table th,
+      .weather-table td {
+        text-align: center;
+        vertical-align: middle;
+      }
+
+      /* Responsive table for mobile view */
+      @media (max-width: 768px) {
+        .weather-table thead {
+          display: none;
         }
+
+        .weather-table,
+        .weather-table tbody,
+        .weather-table tr,
+        .weather-table td {
+          display: block;
+          width: 100%;
+        }
+
+        .weather-table tr {
+          margin-bottom: 15px;
+          border-bottom: 1px solid #ddd;
+        }
+
+        .weather-table td {
+          text-align: right;
+          padding-left: 50%;
+          position: relative;
+        }
+
+        .weather-table td:before {
+          content: attr(data-label);
+          position: absolute;
+          left: 0;
+          width: 45%;
+          padding-left: 15px;
+          font-weight: bold;
+          text-align: left;
+        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container-fluid py-5">
-        <div class="row justify-content-center fade-in">
-            <div class="col-lg-8">
-                <h1 class="mb-4 text-center">Weather Forecast</h1>
-                
-                {% if error_message %}
-                <div class="alert alert-danger" role="alert">
-                    {{ error_message }}
-                </div>
-                {% endif %}
+      <div class="row justify-content-center fade-in">
+        <div class="col-lg-8">
+          <h1 class="mb-4 text-center">Weather Forecast</h1>
 
-                <form method="post" class="mb-5">
-                    {% csrf_token %}
-                    <div class="input-group">
-                        <input type="text" id="city" name="city" class="form-control" placeholder="Enter City Name" aria-label="City Name">
-                        <button type="submit" class="btn btn-primary">Get Forecast</button>
-                    </div>
-                </form>
+          {% if error_message %}
+          <div class="alert alert-danger" role="alert">{{ error_message }}</div>
+          {% endif %}
 
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover weather-table">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Date</th>
-                                <th>Max Temp (°C)</th>
-                                <th>Min Temp (°C)</th>
-                                <th>Total Precipitation (mm)</th>
-                                <th>Sunrise</th>
-                                <th>Sunset</th>
-                                <th>Condition</th>
-                                <th>Wind Speed (km/h)</th>
-                                <th>Humidity (%)</th>
-                                <th>UV Index</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for forecast in forecasts %}
-                            <tr>
-                                <td>{{ forecast.date }}</td>
-                                <td>{{ forecast.max_temp }} °C</td>
-                                <td>{{ forecast.min_temp }} °C</td>
-                                <td>{{ forecast.total_precip }} mm</td>
-                                <td>{{ forecast.sunrise }}</td>
-                                <td>{{ forecast.sunset }}</td>
-                                <td>{{ forecast.condition }}</td>
-                                <td>{{ forecast.wind_speed }} km/h</td>
-                                <td>{{ forecast.humidity }}%</td>
-                                <td>{{ forecast.uv }}</td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="10" class="text-center">No forecasts available.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+          <form method="post" class="mb-5">
+            {% csrf_token %}
+            <div class="input-group">
+              <input
+                type="text"
+                id="city"
+                name="city"
+                class="form-control"
+                placeholder="Enter City Name"
+                aria-label="City Name"
+              />
+              <button type="submit" class="btn btn-primary">
+                Get Forecast
+              </button>
             </div>
+          </form>
+
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover weather-table">
+              <thead class="table-dark">
+                <tr>
+                  <th>Date</th>
+                  <th>Max Temp (°C)</th>
+                  <th>Min Temp (°C)</th>
+                  <th>Total Precipitation (mm)</th>
+                  <th>Sunrise</th>
+                  <th>Sunset</th>
+                  <th>Condition</th>
+                  <th>Wind Speed (km/h)</th>
+                  <th>Humidity (%)</th>
+                  <th>UV Index</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for forecast in forecasts %}
+                <tr>
+                  <td data-label="Date">{{ forecast.date }}</td>
+                  <td data-label="Max Temp">{{ forecast.max_temp }} °C</td>
+                  <td data-label="Min Temp">{{ forecast.min_temp }} °C</td>
+                  <td data-label="Total Precip">
+                    {{ forecast.total_precip }} mm
+                  </td>
+                  <td data-label="Sunrise">{{ forecast.sunrise }}</td>
+                  <td data-label="Sunset">{{ forecast.sunset }}</td>
+                  <td data-label="Condition">{{ forecast.condition }}</td>
+                  <td data-label="Wind Speed">
+                    {{ forecast.wind_speed }} km/h
+                  </td>
+                  <td data-label="Humidity">{{ forecast.humidity }}%</td>
+                  <td data-label="UV Index">{{ forecast.uv }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="10" class="text-center">
+                    No forecasts available.
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
         </div>
+      </div>
     </div>
 
-    <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+  </body>
 </html>
